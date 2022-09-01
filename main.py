@@ -34,3 +34,13 @@ def pull_tables(url):
     output['Away']['Lineup'].columns = output['Away']['Lineup'].iloc[0]
     output['Away']['Lineup'] = output['Away']['Lineup'].drop(output['Away']['Lineup'].index[0])
     return output
+
+
+# I scrape through the main website to get href tags
+def href_scraper():
+    base_url = 'https://rugbyresults.fusesport.com/competitions.asp'
+    # I want to select the top 'Schedule and Standings' so that it works once the next season starts
+    div_list = BeautifulSoup(requests.get(base_url).text, 'html.parser').find_all('div', class_='competitions')[0].find_all('a')
+    for div in div_list:
+        cup_list = BeautifulSoup(requests.get('https://rugbyresults.fusesport.com/competitions.asp' + div['href']).text, 'html.parser').find_all('table')[0].find_all('td', class_='schedule')
+        for cup in cup_list:
