@@ -110,5 +110,5 @@ def pull_last_games_df(n_days_prior, n_attempts, wait_period_seconds):
             break
         except:
             time.sleep(wait_period_seconds)
-        if attempt == n_attempts:
-            print('Fatal Error')
+            if attempt == (n_attempts-1):
+                print('Fatal Error')
