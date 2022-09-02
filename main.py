@@ -25,11 +25,11 @@ def pull_tables(url):
         },
         'Home': {
             'Lineup': data[1][0].iloc[:-2, ],
-            'PenaltyTries': int(data[1][0].iloc[-2, 3])
+            'PenaltyTries': data[1][0].iloc[-2, 3]
         },
         'Away': {
             'Lineup': data[2][0].iloc[:-2, ],
-            'PenaltyTries': int(data[2][0].iloc[-2, 3])
+            'PenaltyTries': data[2][0].iloc[-2, 3]
         }
     }
     output['Home']['Lineup'].columns = output['Home']['Lineup'].iloc[0]
