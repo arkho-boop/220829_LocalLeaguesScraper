@@ -44,8 +44,7 @@ def href_scraper():
     base_url = 'https://rugbyresults.fusesport.com/competitions.asp'
     # I want to select the top 'Schedule and Standings' so that it works once the next season starts
     soup = BeautifulSoup(requests.get(base_url).text, 'html.parser')
-    names = [i.text.replace('\r', '').replace('\t', '').replace('\n', '') for i in
-             soup.find_all('div', class_='competitions')[0].find_all('a')]
+    names = [i.text.replace('\r', '').replace('\t', '').replace('\n', '') for i in soup.find_all('div', class_='competitions')[0].find_all('a')]
     links = [i['href'] for i in soup.find_all('div', class_='competitions')[0].find_all('a')]
     div_list = []
     output = []
@@ -60,8 +59,7 @@ def href_scraper():
         i += 1
     cup_list = []
     for elem in div_list:
-        soup = BeautifulSoup(requests.get('https://rugbyresults.fusesport.com/competitions.asp' + elem['Link']).text,
-                             'html.parser')
+        soup = BeautifulSoup(requests.get('https://rugbyresults.fusesport.com/competitions.asp' + elem['Link']).text,'html.parser')
         names = [i.text for i in soup.find_all('table')[0].find_all('td', attrs={'colspan': '2'})]
         links = [i.find('a')['href'] for i in soup.find_all('table')[0].find_all('td', attrs={'class': 'schedule'})]
         i = 0
@@ -75,8 +73,7 @@ def href_scraper():
             )
             i += 1
     for cup in cup_list:
-        tables = BeautifulSoup(requests.get('https://rugbyresults.fusesport.com/' + cup['Link']).text,
-                               'html.parser').find_all('table')
+        tables = BeautifulSoup(requests.get('https://rugbyresults.fusesport.com/' + cup['Link']).text,'html.parser').find_all('table')
         for table in tables:
             for link in table.find_all('a'):
                 if link.has_attr('href'):
@@ -96,9 +93,7 @@ def href_scraper():
                                 'Cup_name': cup['Cup_name'],
                                 'Game_link': ('https://rugbyresults.fusesport.com/' + link['href']),
                                 'Datetime': datetime.datetime.strptime(
-                                    link.parent.parent.find('td', {'data-label': r'Date/Time'}).text.replace('00:',
-                                                                                                             '12:'),
-                                    r"%d/%m/%Y %I:%M %p").replace(tzinfo=pytz.timezone('Australia/Sydney'))
+                                    link.parent.parent.find('td', {'data-label': r'Date/Time'}).text.replace('00:','12:'),r"%d/%m/%Y %I:%M %p").replace(tzinfo=pytz.timezone('Australia/Sydney'))
                             }
                         )
                 else:
