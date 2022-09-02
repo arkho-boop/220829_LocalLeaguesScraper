@@ -40,7 +40,33 @@ def pull_tables(url):
 def href_scraper():
     base_url = 'https://rugbyresults.fusesport.com/competitions.asp'
     # I want to select the top 'Schedule and Standings' so that it works once the next season starts
-    div_list = BeautifulSoup(requests.get(base_url).text, 'html.parser').find_all('div', class_='competitions')[0].find_all('a')
-    for div in div_list:
-        cup_list = BeautifulSoup(requests.get('https://rugbyresults.fusesport.com/competitions.asp' + div['href']).text, 'html.parser').find_all('table')[0].find_all('td', class_='schedule')
-        for cup in cup_list:
+    soup = BeautifulSoup(requests.get(base_url).text, 'html.parser')
+    names = [i.text.replace('\r', '').replace('\t', '').replace('\n', '') for i in soup.find_all('div', class_='competitions')[0].find_all('a')]
+    links = [i['href'] for i in soup.find_all('div', class_='competitions')[0].find_all('a')]
+    div_list = []
+    i = 0
+    while i < len(names):
+        div_list.append(
+            {
+                'Div_name': names[i],
+                'Link': links[i]
+            }
+        )
+        i += 1
+    cup_list = []
+    for elem in div_list:
+        soup = BeautifulSoup(requests.get('https://rugbyresults.fusesport.com/competitions.asp' + elem['Link']).text, 'html.parser')
+        names = [i.text for i in soup.find_all('table')[0].find_all('td', attrs={'colspan': '2'})]
+        links = [i.find('a')['href'] for i in soup.find_all('table')[0].find_all('td', attrs={'class': 'schedule'})]
+        i = 0
+        while i < len(names):
+            cup_list.append(
+                {
+                    'Div_name': elem['Div_name'],
+                    'Cup_name': names[i],
+                    'Link': links[i]
+                }
+            )
+            i += 1
+    for cup in cup_list:
+
