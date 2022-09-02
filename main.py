@@ -1,6 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+import time
+import datetime
+import pytz
 
 
 # I pull tables with a GAME url
@@ -79,7 +82,7 @@ def href_scraper():
                             {
                                 'Div_name': cup['Div_name'],
                                 'Cup_name': cup['Cup_name'],
-                                'Game_link': link['href'],
+                                'Game_link': ('https://rugbyresults.fusesport.com/' + link['href']),
                                 'Datetime': None
                             }
                         )
@@ -88,10 +91,22 @@ def href_scraper():
                             {
                                 'Div_name': cup['Div_name'],
                                 'Cup_name': cup['Cup_name'],
-                                'Game_link': link['href'],
-                                'Datetime': link.parent.parent.find('td', {'data-label': r'Date/Time'}).text
+                                'Game_link': ('https://rugbyresults.fusesport.com/' + link['href']),
+                                'Datetime': datetime.datetime.strptime(link.parent.parent.find('td', {'data-label': r'Date/Time'}).text.replace('00:', '12:'), r"%d/%m/%Y %I:%M %p").replace(tzinfo=pytz.timezone('Australia/Sydney'))
                             }
                         )
                 else:
                     pass
     return output
+
+
+# I use href_scraper to return a df of dates within user-specified time period
+# number of tries in case fail
+def pull_last_games_df(n_days_prior, n_attempts, wait_period_seconds):
+    for attempt in range(0, n_attempts):
+        try:
+            output = pd.DataFrame(href_scraper())
+
+            break
+        except:
+            time.sleep(wait_period_seconds)
