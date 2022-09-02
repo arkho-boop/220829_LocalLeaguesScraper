@@ -105,8 +105,10 @@ def href_scraper():
 def pull_last_games_df(n_days_prior, n_attempts, wait_period_seconds):
     for attempt in range(0, n_attempts):
         try:
-            output = pd.DataFrame(href_scraper())
-
+            df = pd.DataFrame(href_scraper())
+            return df[datetime.datetime.now().replace(tzinfo=pytz.timezone('Australia/Sydney')) - df['Datetime'] <= datetime.timedelta(days=n_days_prior)]
             break
         except:
             time.sleep(wait_period_seconds)
+        if attempt == n_attempts:
+            print('Fatal Error')
