@@ -44,6 +44,7 @@ def href_scraper():
     names = [i.text.replace('\r', '').replace('\t', '').replace('\n', '') for i in soup.find_all('div', class_='competitions')[0].find_all('a')]
     links = [i['href'] for i in soup.find_all('div', class_='competitions')[0].find_all('a')]
     div_list = []
+    output = []
     i = 0
     while i < len(names):
         div_list.append(
@@ -69,4 +70,28 @@ def href_scraper():
             )
             i += 1
     for cup in cup_list:
-
+        tables = BeautifulSoup(requests.get('https://rugbyresults.fusesport.com/' + cup['Link']).text, 'html.parser').find_all('table')
+        for table in tables:
+            for link in table.find_all('a'):
+                if link.has_attr('href'):
+                    if link.parent.parent.find('td', {'data-label': r'Date/Time'}) is None:
+                        output.append(
+                            {
+                                'Div_name': cup['Div_name'],
+                                'Cup_name': cup['Cup_name'],
+                                'Game_link': link['href'],
+                                'Datetime': None
+                            }
+                        )
+                    else:
+                        output.append(
+                            {
+                                'Div_name': cup['Div_name'],
+                                'Cup_name': cup['Cup_name'],
+                                'Game_link': link['href'],
+                                'Datetime': link.parent.parent.find('td', {'data-label': r'Date/Time'}).text
+                            }
+                        )
+                else:
+                    pass
+    return output
